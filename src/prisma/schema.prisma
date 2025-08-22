@@ -17,6 +17,7 @@ model User {
   email      String?   @db.VarChar(255)
   status     String    @default("ACTIVE") @db.VarChar(20)
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamp(6)
   notDebtor  DateTime? @map("not_debtor") @db.Timestamp(6)
   
   // Relaciones
