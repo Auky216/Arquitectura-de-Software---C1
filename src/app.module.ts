@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './user/user.module';
+import { EnterprisesModule } from './enterprise/enterprises.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { UsersModule } from './user/user.module';
     }),
     PrismaModule, // ← Esto es crucial
     UsersModule,
+    EnterprisesModule
   ],
   controllers: [],
   providers: [],
