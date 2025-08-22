@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // o "mysql" según tu preferencia
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  document   String    @id @db.VarChar(20)
+  type       String    @db.VarChar(3)
+  phone      String?   @db.VarChar(15)
+  email      String?   @db.VarChar(255)
+  status     String    @default("ACTIVE") @db.VarChar(20)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  notDebtor  DateTime? @map("not_debtor") @db.Timestamp(6)
+  
+  // Relaciones
+  debts UserDebt[]
+  
+  @@map("user")
+}
+
+model Enterprise {
+  ruc          String    @id @db.VarChar(20)
+  businessName String    @map("business_name") @db.VarChar(255)
+  contactEmail String?   @map("contact_email") @db.VarChar(255)
+  apiKey       String?   @unique @map("api_key") @db.VarChar(64)
+  status       String    @default("ACTIVE") @db.VarChar(20)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  
+  // Relaciones
+  userDebts UserDebt[]
+  
+  @@map("enterprise")
+}
+
+model UserDebt {
+  id             Int      @id @default(autoincrement())
+  userDocument   String   @map("user_document") @db.VarChar(20)
+  enterpriseRuc  String   @map("enterprise_ruc") @db.VarChar(20)
+  debtAmount     Decimal  @map("debt_amount") @db.Decimal(10, 2)
+  dueDate        DateTime? @map("due_date") @db.Date
+  status         String   @default("PENDING") @db.VarChar(20)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+  
+  // Relaciones
+  user       User       @relation(fields: [userDocument], references: [document])
+  enterprise Enterprise @relation(fields: [enterpriseRuc], references: [ruc])
+  
+  @@map("user_debt")
+  @@unique([userDocument, enterpriseRuc], name: "unique_user_enterprise_debt")
+  @@index([userDocument])
+  @@index([enterpriseRuc])
+  @@index([status])
+  @@index([dueDate])
+}
